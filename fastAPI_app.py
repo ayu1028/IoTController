@@ -16,7 +16,7 @@ async def home(request: Request):
         name="index.html", context={'request': request}
     )
 
-try:
-    uvicorn.run(app, host='0.0.0.0', port=8000)
-except KeyboardInterrupt:
-    pass
+# try:
+#     uvicorn.run(app, host='0.0.0.0', port=8000)
+# except KeyboardInterrupt:
+#     pass
