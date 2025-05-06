@@ -53,7 +53,7 @@ body {
     align-items: center; /* 中央寄せ */
 }
 
-#tab1 button, #tab2 button, #tab3 .kaiteki-and-teishi-ctl button {
+#tab1 button, #tab2 button, .kaiteki-and-teishi-ctl button {
     width: 200px; /* ボタンの幅を同じにする */
     padding: 15px 20px; /* パディング */
     margin: 10px; /* マージン */
@@ -63,7 +63,7 @@ body {
     border-color: rgba(0, 0, 0, 0);
     cursor: pointer; /* カーソルをポインターにする */
     font-size: 16px; /* フォントサイズ */
-    transition: background-color 0.3s ease; /* 背景色の変化にトランジションを追加 */
+    background-color: #bbbbbb;
 }
 
 .sep-rl button {
@@ -76,7 +76,7 @@ body {
     border-color: rgba(0, 0, 0, 0);
     cursor: pointer; /* カーソルをポインターにする */
     font-size: 16px; /* フォントサイズ */
-    transition: background-color 0.3s ease; /* 背景色の変化にトランジションを追加 */
+    background-color: #bbbbbb;
 }
 
 #tab1 button.denki-on, #tab2 button.denki-on {
@@ -98,4 +98,8 @@ body {
     width: 180px;
     opacity: 0.7;
     transition: 0.1s;
+}
+
+button.active-btn {
+    background-color: aquamarine;
 }

@@ -8,19 +8,15 @@ import uvicorn
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-
 templates = Jinja2Templates(directory="templates")
-
 
 @app.get("/home", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse(
-        request=request, name="index.html"
+        name="index.html", context={'request': request}
     )
 
 try:
     uvicorn.run(app, host='0.0.0.0', port=8000)
 except KeyboardInterrupt:
     pass
-

@@ -11,7 +11,7 @@
         <button class="tab-button" data-tab="tab1">電気 CH1</button>
         <button class="tab-button" data-tab="tab2">電気 CH2</button>
         <button class="tab-button" data-tab="tab3">エアコン</button>
-        <button class="tab-button" data-tab="tab4">環境</button>
+        <button class="tab-button" data-tab="tab4">温度・湿度</button>
     </div>
 
     <div class="tab-content" id="tab1">
@@ -28,14 +28,15 @@
     </div>
     <div class="tab-content" id="tab3">
         <div>air conditioner controller</div>
+        <div><p>state: <b>停止</b></p></div>
         <div class="sep-rl">
             <div class="temp-ctl">
-                <div>温度設定</div>
-                <div>26.5度</div>
+                <div>温度設定 [℃]</div>
+                <div id="ondo-settei">26.5</div>
             </div>
             <div class="hum-ctl">
-                <div>湿度設定</div>
-                <div>50 %</div>
+                <div>湿度設定 [%]</div>
+                <div id="shitsudo-settei">50</div>
             </div>
         </div>
         <div class="kaiteki-and-teishi-ctl">
@@ -44,19 +45,19 @@
         </div>
         <div class="sep-rl">
             <div class="temp-ctl">
-                <button class="temp">冷房</button>
-                <button class="temp-down">暖房</button>
+                <button class="reibo">冷房</button>
+                <button class="danbo">暖房</button>
             </div>
             <div class="hum-ctl">
-                <button class="hum">除湿</button>
-                <button class="hum">加湿</button>
+                <button class="joshitsu">除湿</button>
+                <button class="kashitsu">加湿</button>
             </div>
         </div>
         <div class="sep-rl">
             <div class="temp-ctl">
                 <div>温度</div>
                 <button class="temp">up</button>
-                <button class="temp-down">down</button>
+                <button class="temp">down</button>
             </div>
             <div class="hum-ctl">
                 <div>湿度</div>
