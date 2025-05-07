@@ -55,7 +55,7 @@ body {
 
 #tab1 button, #tab2 button, .kaiteki-and-teishi-ctl button {
     width: 200px; /* ボタンの幅を同じにする */
-    padding: 15px 20px; /* パディング */
+    padding: 5px 20px; /* パディング */
     margin: 10px; /* マージン */
     border: solid;
     border-width: 5px;
@@ -68,7 +68,7 @@ body {
 
 .sep-rl button {
     width: 120px; /* ボタンの幅を同じにする */
-    padding: 15px 20px; /* パディング */
+    padding: 5px 20px; /* パディング */
     margin: 10px; /* マージン */
     border: solid;
     border-width: 5px;
@@ -102,4 +102,8 @@ body {
 
 button.active-btn {
     background-color: aquamarine;
+}
+
+.hidden {
+    display: none;
 }
