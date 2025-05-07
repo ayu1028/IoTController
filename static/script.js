@@ -81,10 +81,13 @@ document.addEventListener('DOMContentLoaded', function() {
             element.classList.add('active-btn');
             if(idName == 'reibo') {
                 document.getElementById('reibo-temp').classList.remove('hidden');
+                document.getElementById('state').textContent = '冷房';
             } else if (idName == 'danbo') {
                 document.getElementById('danbo-temp').classList.remove('hidden');
+                document.getElementById('state').textContent = '暖房';
             } else if (idName == 'kaiteki') {
                 document.getElementById('kaiteki-temp').classList.remove('hidden');
+                document.getElementById('state').textContent = '快適自動';
             }
         });
     });
@@ -110,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         this.classList.add('active-btn');
+        document.getElementById('state').textContent = '停止';
     });
 
     // 除湿ボタンの挙動
@@ -128,7 +132,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             this.classList.add('active-btn');
-            document.getElementById('reibo-hum').classList.remove('hidden')
+            document.getElementById('reibo-hum').classList.remove('hidden');
+            document.getElementById('state').textContent = '除湿冷房';
         }
     });
 
@@ -148,7 +153,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             this.classList.add('active-btn');
-            document.getElementById('danbo-hum').classList.remove('hidden')
+            document.getElementById('danbo-hum').classList.remove('hidden');
+            document.getElementById('state').textContent = '加湿暖房';
         }
     });
 
