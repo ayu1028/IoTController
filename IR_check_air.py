@@ -3,7 +3,7 @@ from gpiozero import Button
 import json
 
 # obtain read pin number
-pin = 25
+pin = 5
 # obtain wait interval (us)
 wait = 4e4
 # baud [us]
@@ -110,7 +110,7 @@ def frame_change_hex(frame_bin: list):
 #     return data
 
 def main():
-    fileName = "IR_data_air_v2.json"
+    fileName = "IR_data_air.json"
     while True:
         signalName = input('input signal name("q" to suit):')
         if signalName == "q":
