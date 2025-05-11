@@ -89,6 +89,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('kaiteki-temp').classList.remove('hidden');
                 document.getElementById('state').textContent = '快適自動';
             }
+
+            state = {
+                reibo_on: document.getElementById('reibo').classList.contains('active-btn') ? true : false,
+                danbo_on: document.getElementById('danbo').classList.contains('active-btn') ? true : false,
+                kaiteki_on: document.getElementById('kaiteki').classList.contains('active-btn') ? true : false,
+                off: document.getElementById('teishi').classList.contains('active-btn') ? true : false,
+                joshitsu_on: document.getElementById('joshitsu').classList.contains('active-btn') ? true : false,
+                kashitsu_on: document.getElementById('kashitsu').classList.contains('active-btn') ? true : false,
+                reibo_temp: Number(document.getElementById("reibo-temp").textContent),
+                reibo_hum: Number(document.getElementById("reibo-hum").textContent),
+                danbo_temp: Number(document.getElementById("danbo-temp").textContent),
+                danbo_hum: Number(document.getElementById("danbo-hum").textContent),
+                kaiteki_temp: Number(document.getElementById("kaiteki-temp").textContent),
+            };
+    
+            fetch("/state/", { // FastAPIアプリケーションのURL
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(state)
+              })
+              .then(function(response) {
+                console.log(response);
+              });
+            
         });
     });
 
@@ -114,6 +140,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         this.classList.add('active-btn');
         document.getElementById('state').textContent = '停止';
+
+        state = {
+            reibo_on: false,
+            danbo_on: false,
+            kaiteki_on: false,
+            off: true,
+            joshitsu_on: false,
+            kashitsu_on: false,
+            reibo_temp: Number(document.getElementById("reibo-temp").textContent),
+            reibo_hum: Number(document.getElementById("reibo-hum").textContent),
+            danbo_temp: Number(document.getElementById("danbo-temp").textContent),
+            danbo_hum: Number(document.getElementById("danbo-hum").textContent),
+            kaiteki_temp: Number(document.getElementById("kaiteki-temp").textContent),
+        };
+
+        fetch("/state/", { // FastAPIアプリケーションのURL
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(state)
+          })
+          .then(function(response) {
+            console.log(response);
+          });
     });
 
     // 除湿ボタンの挙動
@@ -135,6 +186,31 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('reibo-hum').classList.remove('hidden');
             document.getElementById('state').textContent = '除湿冷房';
         }
+
+        state = {
+            reibo_on: document.getElementById('reibo').classList.contains('active-btn') ? true : false,
+            danbo_on: document.getElementById('danbo').classList.contains('active-btn') ? true : false,
+            kaiteki_on: document.getElementById('kaiteki').classList.contains('active-btn') ? true : false,
+            off: document.getElementById('teishi').classList.contains('active-btn') ? true : false,
+            joshitsu_on: document.getElementById('joshitsu').classList.contains('active-btn') ? true : false,
+            kashitsu_on: document.getElementById('kashitsu').classList.contains('active-btn') ? true : false,
+            reibo_temp: Number(document.getElementById("reibo-temp").textContent),
+            reibo_hum: Number(document.getElementById("reibo-hum").textContent),
+            danbo_temp: Number(document.getElementById("danbo-temp").textContent),
+            danbo_hum: Number(document.getElementById("danbo-hum").textContent),
+            kaiteki_temp: Number(document.getElementById("kaiteki-temp").textContent),
+        };
+
+        fetch("/state/", { // FastAPIアプリケーションのURL
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(state)
+          })
+          .then(function(response) {
+            console.log(response);
+          });
     });
 
     // 加湿ボタンの挙動
@@ -156,6 +232,31 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('danbo-hum').classList.remove('hidden');
             document.getElementById('state').textContent = '加湿暖房';
         }
+
+        state = {
+            reibo_on: document.getElementById('reibo').classList.contains('active-btn') ? true : false,
+            danbo_on: document.getElementById('danbo').classList.contains('active-btn') ? true : false,
+            kaiteki_on: document.getElementById('kaiteki').classList.contains('active-btn') ? true : false,
+            off: document.getElementById('teishi').classList.contains('active-btn') ? true : false,
+            joshitsu_on: document.getElementById('joshitsu').classList.contains('active-btn') ? true : false,
+            kashitsu_on: document.getElementById('kashitsu').classList.contains('active-btn') ? true : false,
+            reibo_temp: Number(document.getElementById("reibo-temp").textContent),
+            reibo_hum: Number(document.getElementById("reibo-hum").textContent),
+            danbo_temp: Number(document.getElementById("danbo-temp").textContent),
+            danbo_hum: Number(document.getElementById("danbo-hum").textContent),
+            kaiteki_temp: Number(document.getElementById("kaiteki-temp").textContent),
+        };
+
+        fetch("/state/", { // FastAPIアプリケーションのURL
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(state)
+          })
+          .then(function(response) {
+            console.log(response);
+          });
     });
 
     // 温度調整(up/down)ボタンの挙動
@@ -172,19 +273,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     if(temp >= reibo_temp_max) {
                         temp = reibo_temp_max;
                     }
-                    document.getElementById("reibo-temp").textContent = temp;
+                    document.getElementById("reibo-temp").textContent = temp.toFixed(1);
                 } else if(document.getElementById('danbo').classList.contains('active-btn')) {
                     temp = danbo_temp_before + 0.5;
                     if(temp >= danbo_temp_max) {
                         temp = danbo_temp_max;
                     }
-                    document.getElementById("danbo-temp").textContent = temp;
+                    document.getElementById("danbo-temp").textContent = temp.toFixed(1);
                 } else if(document.getElementById('kaiteki').classList.contains('active-btn')) {
                     temp = kaiteki_temp_before + 0.5;
                     if(temp >= kaiteki_temp_max) {
                         temp = kaiteki_temp_max;
                     }
-                    document.getElementById("kaiteki-temp").textContent = temp;
+                    document.getElementById("kaiteki-temp").textContent = temp.toFixed(1);
                 }
 
             } else if(btn_text == "down") {
@@ -193,21 +294,46 @@ document.addEventListener('DOMContentLoaded', function() {
                     if(temp <= reibo_temp_min) {
                         temp = reibo_temp_min;
                     }
-                    document.getElementById("reibo-temp").textContent = temp;
+                    document.getElementById("reibo-temp").textContent = temp.toFixed(1);
                 } else if(document.getElementById('danbo').classList.contains('active-btn')) {
                     temp = danbo_temp_before - 0.5;
                     if(temp <= danbo_temp_min) {
                         temp = danbo_temp_min;
                     }
-                    document.getElementById("danbo-temp").textContent = temp;
+                    document.getElementById("danbo-temp").textContent = temp.toFixed(1);
                 } else if(document.getElementById('kaiteki').classList.contains('active-btn')) {
                     temp = kaiteki_temp_before - 0.5;
                     if(temp <= kaiteki_temp_min) {
                         temp = kaiteki_temp_min;
                     }
-                    document.getElementById("kaiteki-temp").textContent = temp;
+                    document.getElementById("kaiteki-temp").textContent = temp.toFixed(1);
                 }
             }
+
+            state = {
+                reibo_on: document.getElementById('reibo').classList.contains('active-btn') ? true : false,
+                danbo_on: document.getElementById('danbo').classList.contains('active-btn') ? true : false,
+                kaiteki_on: document.getElementById('kaiteki').classList.contains('active-btn') ? true : false,
+                off: document.getElementById('teishi').classList.contains('active-btn') ? true : false,
+                joshitsu_on: document.getElementById('joshitsu').classList.contains('active-btn') ? true : false,
+                kashitsu_on: document.getElementById('kashitsu').classList.contains('active-btn') ? true : false,
+                reibo_temp: Number(document.getElementById("reibo-temp").textContent),
+                reibo_hum: Number(document.getElementById("reibo-hum").textContent),
+                danbo_temp: Number(document.getElementById("danbo-temp").textContent),
+                danbo_hum: Number(document.getElementById("danbo-hum").textContent),
+                kaiteki_temp: Number(document.getElementById("kaiteki-temp").textContent),
+            };
+    
+            fetch("/tempAndHum/", { // FastAPIアプリケーションのURL
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(state)
+              })
+              .then(function(response) {
+                console.log(response);
+              });
         });
     });
 
@@ -248,6 +374,32 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById("danbo-hum").textContent = hum;
                 }
             }
+
+            state = {
+                reibo_on: document.getElementById('reibo').classList.contains('active-btn') ? true : false,
+                danbo_on: document.getElementById('danbo').classList.contains('active-btn') ? true : false,
+                kaiteki_on: document.getElementById('kaiteki').classList.contains('active-btn') ? true : false,
+                off: document.getElementById('teishi').classList.contains('active-btn') ? true : false,
+                joshitsu_on: document.getElementById('joshitsu').classList.contains('active-btn') ? true : false,
+                kashitsu_on: document.getElementById('kashitsu').classList.contains('active-btn') ? true : false,
+                reibo_temp: Number(document.getElementById("reibo-temp").textContent),
+                reibo_hum: Number(document.getElementById("reibo-hum").textContent),
+                danbo_temp: Number(document.getElementById("danbo-temp").textContent),
+                danbo_hum: Number(document.getElementById("danbo-hum").textContent),
+                kaiteki_temp: Number(document.getElementById("kaiteki-temp").textContent),
+            };
+    
+            fetch("/tempAndHum/", { // FastAPIアプリケーションのURL
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(state)
+              })
+              .then(function(response) {
+                console.log(response);
+              });
+              
         });
     });
 
@@ -269,12 +421,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初期表示
     document.getElementById('tab1').classList.add('active');
 
-    temp_id_list.forEach(idName => {
-        document.getElementById(idName).classList.add('hidden');
-    });
+    // temp_id_list.forEach(idName => {
+    //     document.getElementById(idName).classList.add('hidden');
+    // });
 
-    hum_id_list.forEach(idName => {
-        document.getElementById(idName).classList.add('hidden');
-    });
+    // hum_id_list.forEach(idName => {
+    //     document.getElementById(idName).classList.add('hidden');
+    // });
 
 });

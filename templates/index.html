@@ -28,32 +28,32 @@
     </div>
     <div class="tab-content" id="tab3">
         <div>air conditioner controller</div>
-        <div><p>state: <b id="state">停止</b></p></div>
+        <div><p>state: <b id="state">{{ state }}</b></p></div>
         <div class="sep-rl">
             <div class="temp-ctl">
                 <div>温度設定 [℃]</div>
-                <p id="reibo-temp">26.5</p>
-                <p id="danbo-temp">22</p>
-                <p id="kaiteki-temp">0</p>
+                <p id="reibo-temp" class="{{ 'hidden' if not initial_data.reibo_on else '' }}">{{ initial_data.reibo_temp }}</p>
+                <p id="danbo-temp" class="{{ 'hidden' if not initial_data.danbo_on else '' }}">{{ initial_data.danbo_temp }}</p>
+                <p id="kaiteki-temp" class="{{ 'hidden' if not initial_data.kaiteki_on else '' }}">{{ initial_data.kaiteki_temp }}</p>
             </div>
             <div class="hum-ctl">
                 <div>湿度設定 [%]</div>
-                <p id="reibo-hum">50</p>
-                <p id="danbo-hum">40</p>
+                <p id="reibo-hum" class="{{ 'hidden' if not initial_data.joshitsu_on else '' }}">{{ initial_data.reibo_hum }}</p>
+                <p id="danbo-hum" class="{{ 'hidden' if not initial_data.kashitsu_on else '' }}">{{ initial_data.danbo_hum }}</p>
             </div>
         </div>
         <div class="kaiteki-and-teishi-ctl">
-            <button id="kaiteki">快適自動</button>
-            <button id="teishi">停止</button>
+            <button id="kaiteki" class="{{ 'active-btn' if initial_data.kaiteki_on else '' }}">快適自動</button>
+            <button id="teishi" class="{{ 'active-btn' if initial_data.off else '' }}">停止</button>
         </div>
         <div class="sep-rl">
             <div class="temp-ctl">
-                <button id="reibo">冷房</button>
-                <button id="danbo">暖房</button>
+                <button id="reibo" class="{{ 'active-btn' if initial_data.reibo_on else '' }}">冷房</button>
+                <button id="danbo" class="{{ 'active-btn' if initial_data.danbo_on else '' }}">暖房</button>
             </div>
             <div class="hum-ctl">
-                <button id="joshitsu">除湿</button>
-                <button id="kashitsu">加湿</button>
+                <button id="joshitsu" class="{{ 'active-btn' if initial_data.joshitsu_on else '' }}">除湿</button>
+                <button id="kashitsu" class="{{ 'active-btn' if initial_data.kashitsu_on else '' }}">加湿</button>
             </div>
         </div>
         <div class="sep-rl">
