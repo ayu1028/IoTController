@@ -4,8 +4,43 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 import json
-
 from pydantic import BaseModel
+
+import time
+import pigpio
+
+def carrier(gpio, frequency, micros):
+    """
+    Generate carrier square wave.
+    """
+    wf = []
+    cycle = 1000.0 / frequency
+    cycles = int(round(micros/cycle))
+    on = int(round(cycle / 2.0))
+    sofar = 0
+    for c in range(cycles):
+        target = int(round((c+1)*cycle))
+        sofar += on
+        off = target - sofar
+        sofar += off
+        wf.append(pigpio.pulse(1<<gpio, 0, on))
+        wf.append(pigpio.pulse(0, 1<<gpio, off))
+    return wf
+
+pi = pigpio.pi()
+
+GPIO = 26
+FREQ = 38.0 # [kHz], sub-carrier
+GAP_S = 0.1 # [s], gap between each wave
+
+def send_signals(frame1, frame2=None):
+    pi.set_mode(GPIO, pigpio.OUTPUT) # IR TX connected to this GPIO.
+
+    pi.wave_add_new()
+
+    frames = [frame1, frame2]
+
+    emit_time = time.time()
 
 class State(BaseModel):
     reibo_on: bool

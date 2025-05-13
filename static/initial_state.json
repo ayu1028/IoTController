@@ -1,1 +1,1 @@
-{"reibo_on": true, "danbo_on": false, "kaiteki_on": false, "off": false, "joshitsu_on": true, "kashitsu_on": false, "reibo_temp": 27.0, "reibo_hum": 60, "danbo_temp": 22.5, "danbo_hum": 40, "kaiteki_temp": 1.5}
+{"reibo_on": false, "danbo_on": true, "kaiteki_on": false, "off": false, "joshitsu_on": false, "kashitsu_on": false, "reibo_temp": 27.5, "reibo_hum": 60, "danbo_temp": 22.5, "danbo_hum": 45, "kaiteki_temp": 0.0}
