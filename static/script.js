@@ -53,6 +53,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const buttons = document.querySelectorAll('.tab-button');
     const contents = document.querySelectorAll('.tab-content');
 
+    const denki_btns = [...document.getElementsByClassName('denki')];
+
+    denki_btns.forEach(button => {
+        button.addEventListener('click', function () {
+            id = this.id;
+            data = {
+                signal_id: id,
+            };
+            fetch("/light/", { // FastAPIアプリケーションのURL
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+              })
+              .then(function(response) {
+                console.log(response);
+              });
+        });
+    });
+
     // 冷房、暖房、快適自動のボタンの挙動
     control_btn_id_list.forEach(idName => {
         const element = document.getElementById(idName);

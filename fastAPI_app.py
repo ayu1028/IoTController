@@ -9,6 +9,72 @@ from pydantic import BaseModel
 import time
 import pigpio
 
+def hex_to_bin(hex_str):
+    if not isinstance(hex_str, str) or len(hex_str) != 2:
+        return None
+    try:
+        scale = 16 ## equals to hexadecimal
+        num_of_bits = 8
+        binary_string = bin(int(hex_str, scale))[2:].zfill(num_of_bits)
+        return binary_string
+    except ValueError:
+        return None
+
+def hex_to_bin_list(hex_list):
+    bin_list = []
+    for hex in hex_list:
+        command_text = hex_to_bin(hex)
+        bin_list.append(command_text)
+    
+    return bin_list
+
+def reverse_binary8(binary_str):
+    if not isinstance(binary_str, str) or len(binary_str) != 8 or not all(bit in '01' for bit in binary_str):
+        return None
+    reversed_str = binary_str[::-1]
+    return reversed_str
+
+def binary_r_list(bin_list):
+    bin_r_list = []
+    for bin in bin_list:
+        bin_r_list.append(reverse_binary8(bin))
+    
+    return bin_r_list
+
+def binary_to_int(binary_list):
+    if not isinstance(binary_list, list):
+        return None
+    bin_data = []
+    for binary_str in binary_list:
+        if not isinstance(binary_str, str) or len(binary_str) != 8 or not all(bit in '01' for bit in binary_str):
+            return None
+        for bit in binary_str:
+            bin_data.append(int(bit))
+    return bin_data
+
+def make_command_list(signal_int_list):
+    T = 425 # [us]
+    signals = []
+    
+    # leader
+    signals.append(8*T)
+    signals.append(4*T)
+
+    # data
+    for bit in signal_int_list:
+        if bit == 1:
+            signals.append(T)
+            signals.append(3*T)
+        elif bit == 0:
+            signals.append(T)
+            signals.append(T)
+    
+    #trailer
+    signals.append(T)
+
+    return signals
+
+
 def carrier(gpio, frequency, micros):
     """
     Generate carrier square wave.
@@ -31,9 +97,9 @@ pi = pigpio.pi()
 
 GPIO = 26
 FREQ = 38.0 # [kHz], sub-carrier
-GAP_S = 0.1 # [s], gap between each wave
+# GAP_S = 25/1000 # [s], gap between each wave
 
-def send_signals(frame1, frame2=None):
+def send_signals(frame1, frame2=None, GAP_S=0):
     pi.set_mode(GPIO, pigpio.OUTPUT) # IR TX connected to this GPIO.
 
     pi.wave_add_new()
@@ -41,6 +107,54 @@ def send_signals(frame1, frame2=None):
     frames = [frame1, frame2]
 
     emit_time = time.time()
+
+    for frame in frames:
+        if frame != None:
+            marks_wid = {}
+            spaces_wid = {}
+
+            wave = [0]*len(frame)
+
+            pi.wave_clear()
+            for i in range(0, len(frame)):
+                ci = frame[i]
+                if i & 1: # Space
+                    if ci not in spaces_wid:
+                        pi.wave_add_generic([pigpio.pulse(0, 0, ci)])
+                        spaces_wid[ci] = pi.wave_create()
+                    wave[i] = spaces_wid[ci]
+                else: # Mark
+                    if ci not in marks_wid:
+                        wf = carrier(GPIO, FREQ, ci)
+                        pi.wave_add_generic(wf)
+                        marks_wid[ci] = pi.wave_create()
+                    wave[i] = marks_wid[ci]
+
+            delay = emit_time - time.time()
+
+            if delay > 0.0:
+                time.sleep(delay)
+
+            pi.wave_chain(wave)
+
+            while pi.wave_tx_busy():
+                time.sleep(0.001)
+            
+            emit_time = time.time() + GAP_S
+
+            for i in marks_wid:
+                pi.wave_delete(marks_wid[i])
+
+            marks_wid = {}
+
+            for i in spaces_wid:
+                pi.wave_delete(spaces_wid[i])
+            
+            spaces_wid = {}
+        else:
+            pass
+
+    pi.stop()
 
 class State(BaseModel):
     reibo_on: bool
@@ -54,6 +168,9 @@ class State(BaseModel):
     danbo_temp: float
     danbo_hum: int
     kaiteki_temp: float
+
+class Signal(BaseModel):
+    signal_id: str
 
 app = FastAPI()
 
@@ -133,6 +250,25 @@ async def update_and_send_temp_and_hum(state: State):
         json.dump(update_data, f)
 
     return state
+
+@app.post("/light/")
+async def send_light_signal(signal: Signal):
+    signal_id = signal.signal_id
+
+    with open("IR_data_light.json", "r") as f:
+        signal_data = json.load(f)
+    
+    signal_hex_list = signal_data[signal_id]['hex']
+    signal_bin_list = hex_to_bin_list(signal_hex_list)
+    signal_bin_r_list = binary_r_list(signal_bin_list)
+    signal_bin_int_list = binary_to_int(signal_bin_r_list)
+    signal_command = make_command_list(signal_bin_int_list)
+
+    print(signal_command)
+
+    # send_signals(frame1=signal_command)
+
+    return signal_command
 
 # try:
 #     uvicorn.run(app, host='0.0.0.0', port=8000)

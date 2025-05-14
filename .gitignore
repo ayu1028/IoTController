@@ -1,4 +1,7 @@
 .env
 .myenv/
 __pycache__/
+test.json
+test_signals.py
+generate_IR_signal.ipynb
 
