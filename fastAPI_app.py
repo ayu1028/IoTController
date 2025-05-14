@@ -93,13 +93,13 @@ def carrier(gpio, frequency, micros):
         wf.append(pigpio.pulse(0, 1<<gpio, off))
     return wf
 
-pi = pigpio.pi()
-
 GPIO = 26
 FREQ = 38.0 # [kHz], sub-carrier
 # GAP_S = 25/1000 # [s], gap between each wave
 
 def send_signals(frame1, frame2=None, GAP_S=0):
+    pi = pigpio.pi()
+
     pi.set_mode(GPIO, pigpio.OUTPUT) # IR TX connected to this GPIO.
 
     pi.wave_add_new()
@@ -206,6 +206,7 @@ async def home(request: Request):
             'request': request,
             'initial_data': initial_data,
             'state': state,
+            'name': 'IoT Controller',
             }
     )
 
@@ -264,9 +265,9 @@ async def send_light_signal(signal: Signal):
     signal_bin_int_list = binary_to_int(signal_bin_r_list)
     signal_command = make_command_list(signal_bin_int_list)
 
-    print(signal_command)
+    # print(signal_command)
 
-    # send_signals(frame1=signal_command)
+    send_signals(frame1=signal_command)
 
     return signal_command
 
