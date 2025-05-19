@@ -9,6 +9,152 @@ from pydantic import BaseModel
 import time
 import pigpio
 
+frame1_const = {
+    "customer1": "11",
+    "customer2": "DA",
+       "parity": "27",
+        "data1": "00",
+        "data2": "02",
+        "data3": "00",
+        "data4": "",
+        "data5": "02",
+        "data6": "20",
+        "data7": "",
+        "data8": "82",
+        "data9": "",
+       "data10": "3E",
+       "data11": "0B",
+       "data12": "92",
+       "data13": "F4",
+       "data14": "00",
+       "data15": "24",
+       "data16": "00",
+}
+
+frame2_const = {
+    "customer1": "11",
+    "customer2": "DA",
+       "parity": "27",
+        "data1": "00",
+        "data2": "00",
+        "data3": "",
+        "data4": "",
+        "data5": "",
+        "data6": "A0",
+        "data7": "00",
+        "data8": "00",
+        "data9": "06",
+       "data10": "60",
+       "data11": "00",
+       "data12": "0A",
+       "data13": "C4",
+       "data14": "80",
+       "data15": "24",
+}
+
+def kaiteki_temp_calc(kaiteki_temp):
+    if kaiteki_temp < 0:
+            kaiteki_temp += 112
+    else:
+        kaiteki_temp += 96
+    return kaiteki_temp
+
+def make_base_hex_frame(data_before, data_after):
+    frame1 = []
+    frame2 = []
+    frame1_keys = list(frame1_const.keys())
+    frame2_keys = list(frame2_const.keys())
+
+    if data_after['off']:
+        frame1_const['data4'] = "C5"
+        frame1_const['data7'] = "02"
+        frame1_const['data9'] = "B0"
+
+        frame2_const['data3'] = "48"
+        frame2_const['data5'] = "00"
+
+        if data_before['reibo_on']:
+            frame2_const['data4'] = format(int(data_before['reibo_temp']*2), "02X")
+
+        if data_before['danbo_on']:
+            frame2_const['data4'] = format(int(data_before['danbo_temp']*2), "02X")
+        
+        if data_before['kaiteki_on']:
+            kaiteki_temp = kaiteki_temp_calc(data_before['kaiteki_temp'])
+            frame2_const['data4'] = format(int(kaiteki_temp*2), "02X")
+        
+        if data_before['joshitsu_on'] or data_before['kashitsu_on']:
+            if data_before['reibo_on']:
+                frame2_const['data5'] = format(int(data_before['reibo_hum']), "02X")
+            
+            if data_before['danbo_on']:
+                frame2_const['data5'] = format(int(data_before['danbo_hum']), "02X")
+
+    else:
+        frame1_const['data4'] = "45"
+        frame1_const['data9'] = "30"
+
+    if data_after['reibo_on']:
+        frame1_const['data7'] = "0E"
+
+        frame2_const['data3'] = "39"
+        frame2_const['data4'] = format(int(data_before['reibo_temp']*2), "02X")
+        frame2_const['data5'] = "00"
+    
+    if data_after['danbo_on']:
+        frame1_const['data7'] = "10"
+
+        frame2_const['data3'] = "49"
+        frame2_const['data4'] = format(int(data_before['danbo_temp']*2), "02X")
+        frame2_const['data5'] = "00"
+    
+    if data_after['kaiteki_on']:
+        frame1_const['data7'] = "0D"
+
+        frame2_const['data3'] = "09"
+        kaiteki_temp = kaiteki_temp_calc(data_before['kaiteki_temp'])
+        frame2_const['data4'] = format(int(kaiteki_temp*2), "02X")
+        frame2_const['data5'] = "00"
+
+    if data_after['joshitsu_on'] or data_after['kashitsu_on']:
+        frame1_const['data7'] = "13"
+
+        if data_after['reibo_on']:
+            frame2_const['data5'] = format(int(data_after['reibo_hum']), "02X")
+        
+        if data_after['danbo_on']:
+            frame2_const['data5'] = format(int(data_after['danbo_hum']), "02X")
+    
+    if (data_before['reibo_temp'] != data_after['reibo_temp']) or (data_before['danbo_temp'] != data_after['danbo_temp']) or (data_before['kaiteki_temp'] != data_after['kaiteki_temp']):
+        frame1_const['data7'] = "03"
+
+        if data_after['reibo_on']:
+            frame2_const['data4'] = format(int(data_after['reibo_temp']*2), "02X")
+
+        if data_before['danbo_on']:
+            frame2_const['data4'] = format(int(data_after['danbo_temp']*2), "02X")
+        
+        if data_before['kaiteki_on']:
+            kaiteki_temp = kaiteki_temp_calc(data_after['kaiteki_temp'])
+            frame2_const['data4'] = format(int(kaiteki_temp*2), "02X")
+
+    if (data_before['reibo_hum'] != data_after['reibo_hum']) or (data_before['danbo_hum'] != data_after['danbo_hum']):
+        frame1_const['data7'] = "13"
+        if data_after['reibo_on']:
+            frame2_const['data5'] = format(int(data_after['reibo_hum']), "02X")
+        
+        if data_after['danbo_on']:
+            frame2_const['data5'] = format(int(data_after['danbo_hum']), "02X")
+    
+    for key1 in frame1_keys:
+        frame1.append(frame1_const[key1])
+
+    for key2 in frame2_keys:
+        frame2.append(frame2_const[key2])
+
+    return frame1, frame2
+
+
 def hex_to_bin(hex_str):
     if not isinstance(hex_str, str) or len(hex_str) != 2:
         return None
@@ -73,6 +219,20 @@ def make_command_list(signal_int_list):
     signals.append(T)
 
     return signals
+
+def checksum(binary_list):
+    if not isinstance(binary_list, list):
+        return None
+    total = 0
+    for binary_str in binary_list:
+        if not isinstance(binary_str, str) or len(binary_str) != 8 or not all(bit in '01' for bit in binary_str):
+            return None
+        total += int(binary_str, 2)
+
+    lower_8_bits = total & 0xFF
+
+    binary_result = bin(lower_8_bits)[2:].zfill(8)
+    return binary_result
 
 
 def carrier(gpio, frequency, micros):
@@ -212,6 +372,9 @@ async def home(request: Request):
 
 @app.post("/state/")
 async def update_and_send_state(state: State):
+    with open("static/initial_state.json", "r") as f:
+        initial_data = json.load(f)
+
     update_data = {
         "reibo_on": state.reibo_on,
         "danbo_on": state.danbo_on,
@@ -226,13 +389,21 @@ async def update_and_send_state(state: State):
         "kaiteki_temp": state.kaiteki_temp,
     }
 
+    frame1, frame2 = make_base_hex_frame(initial_data, update_data)
+
     with open("static/initial_state.json", "w") as f:
         json.dump(update_data, f)
+
+    print(frame1)
+    print(frame2)
 
     return state
 
 @app.post("/tempAndHum/")
 async def update_and_send_temp_and_hum(state: State):
+    with open("static/initial_state.json", "r") as f:
+        initial_data = json.load(f)
+
     update_data = {
         "reibo_on": state.reibo_on,
         "danbo_on": state.danbo_on,
@@ -247,8 +418,13 @@ async def update_and_send_temp_and_hum(state: State):
         "kaiteki_temp": state.kaiteki_temp,
     }
 
+    frame1, frame2 = make_base_hex_frame(initial_data, update_data)
+
     with open("static/initial_state.json", "w") as f:
         json.dump(update_data, f)
+
+    print(frame1)
+    print(frame2)
 
     return state
 
