@@ -198,9 +198,13 @@ def binary_to_int(binary_list):
             bin_data.append(int(bit))
     return bin_data
 
-def make_command_list(signal_int_list):
+def make_command_list(signal_int_list, air_flag=False):
     T = 425 # [us]
     signals = []
+
+    if air_flag:
+        signals.append(10000)
+        signals.append(25000)
     
     # leader
     signals.append(8*T)
@@ -391,11 +395,28 @@ async def update_and_send_state(state: State):
 
     frame1, frame2 = make_base_hex_frame(initial_data, update_data)
 
+    frame1_bin = hex_to_bin_list(frame1)
+    frame2_bin = hex_to_bin_list(frame2)
+
+    frame1_bin.append(checksum(frame1_bin))
+    frame2_bin.append(checksum(frame2_bin))
+
+    frame1_bin_r = binary_r_list(frame1_bin)
+    frame2_bin_r = binary_r_list(frame2_bin)
+
+    frame1_signal_list = binary_to_int(frame1_bin_r)
+    frame2_signal_list = binary_to_int(frame2_bin_r)
+
+    frame1_signal_command = make_command_list(frame1_signal_list, air_flag=True)
+    frame2_signal_command = make_command_list(frame2_signal_list)
+
+    print(frame1_signal_command)
+    print(frame2_signal_command)
+
+    # send_signals(frame1_signal_command, frame2_signal_command, GAP_S=25/1000)
+
     with open("static/initial_state.json", "w") as f:
         json.dump(update_data, f)
-
-    print(frame1)
-    print(frame2)
 
     return state
 
@@ -420,11 +441,28 @@ async def update_and_send_temp_and_hum(state: State):
 
     frame1, frame2 = make_base_hex_frame(initial_data, update_data)
 
+    frame1_bin = hex_to_bin_list(frame1)
+    frame2_bin = hex_to_bin_list(frame2)
+
+    frame1_bin.append(checksum(frame1_bin))
+    frame2_bin.append(checksum(frame2_bin))
+
+    frame1_bin_r = binary_r_list(frame1_bin)
+    frame2_bin_r = binary_r_list(frame2_bin)
+
+    frame1_signal_list = binary_to_int(frame1_bin_r)
+    frame2_signal_list = binary_to_int(frame2_bin_r)
+
+    frame1_signal_command = make_command_list(frame1_signal_list, air_flag=True)
+    frame2_signal_command = make_command_list(frame2_signal_list)
+
+    print(frame1_signal_command)
+    print(frame2_signal_command)
+
+    # send_signals(frame1_signal_command, frame2_signal_command, GAP_S=25/1000)
+
     with open("static/initial_state.json", "w") as f:
         json.dump(update_data, f)
-
-    print(frame1)
-    print(frame2)
 
     return state
 
