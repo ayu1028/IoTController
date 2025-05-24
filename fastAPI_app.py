@@ -16,12 +16,12 @@ frame1_const = {
         "data1": "00",
         "data2": "02",
         "data3": "00",
-        "data4": "",
+        "data4": "C5",
         "data5": "02",
         "data6": "20",
-        "data7": "",
+        "data7": "02",
         "data8": "82",
-        "data9": "",
+        "data9": "B0",
        "data10": "3E",
        "data11": "0B",
        "data12": "92",
@@ -37,9 +37,9 @@ frame2_const = {
        "parity": "27",
         "data1": "00",
         "data2": "00",
-        "data3": "",
-        "data4": "",
-        "data5": "",
+        "data3": "48",
+        "data4": "34",
+        "data5": "00",
         "data6": "A0",
         "data7": "00",
         "data8": "00",
@@ -60,17 +60,27 @@ def kaiteki_temp_calc(kaiteki_temp):
     return kaiteki_temp
 
 def make_base_hex_frame(data_before, data_after):
+    global frame1_const
+    global frame2_const
+
+    with open("static/time_stamp.json", "r") as f:
+        time_stamp = json.load(f)
+
+    time_int = time_stamp['time_int']
+
     frame1 = []
     frame2 = []
     frame1_keys = list(frame1_const.keys())
     frame2_keys = list(frame2_const.keys())
+
+    frame1_const['data3'] = format(time_int, "02X")
 
     if data_after['off']:
         frame1_const['data4'] = "C5"
         frame1_const['data7'] = "02"
         frame1_const['data9'] = "B0"
 
-        frame2_const['data3'] = "48"
+        frame2_const['data3'] = "38"
         frame2_const['data5'] = "00"
 
         if data_before['reibo_on']:
@@ -410,10 +420,10 @@ async def update_and_send_state(state: State):
     frame1_signal_command = make_command_list(frame1_signal_list, air_flag=True)
     frame2_signal_command = make_command_list(frame2_signal_list)
 
-    print(frame1_signal_command)
-    print(frame2_signal_command)
+    # print(frame1_signal_command)
+    # print(frame2_signal_command)
 
-    # send_signals(frame1_signal_command, frame2_signal_command, GAP_S=25/1000)
+    send_signals(frame1_signal_command, frame2_signal_command, GAP_S=25/1000)
 
     with open("static/initial_state.json", "w") as f:
         json.dump(update_data, f)
@@ -456,10 +466,10 @@ async def update_and_send_temp_and_hum(state: State):
     frame1_signal_command = make_command_list(frame1_signal_list, air_flag=True)
     frame2_signal_command = make_command_list(frame2_signal_list)
 
-    print(frame1_signal_command)
-    print(frame2_signal_command)
+    # print(frame1_signal_command)
+    # print(frame2_signal_command)
 
-    # send_signals(frame1_signal_command, frame2_signal_command, GAP_S=25/1000)
+    send_signals(frame1_signal_command, frame2_signal_command, GAP_S=25/1000)
 
     with open("static/initial_state.json", "w") as f:
         json.dump(update_data, f)

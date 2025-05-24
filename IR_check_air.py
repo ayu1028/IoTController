@@ -110,7 +110,7 @@ def frame_change_hex(frame_bin: list):
 #     return data
 
 def main():
-    fileName = "IR_data_air.json"
+    fileName = "IR_data_air_compare.json"
     while True:
         signalName = input('input signal name("q" to suit):')
         if signalName == "q":

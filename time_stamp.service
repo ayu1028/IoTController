@@ -1,0 +1,15 @@
+[Unit]
+Description=time stamp
+After=network.target
+
+[Service]
+WorkingDirectory=/home/ayusan/IoTController
+ExecStart=/home/ayusan/IoTController/.myenv/bin/python time_stamp.py
+User=ayusan
+Restart=on-failure
+Environment="PATH=/home/ayusan/IoTController/.myenv/bin:/usr/bin:/bin"
+Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+WantedBy=multi-user.target
+

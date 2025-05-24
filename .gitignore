@@ -6,4 +6,6 @@ test_signals.py
 generate_IR_signal.ipynb
 initial_state.json
 test.txt
+IR_data_air_compare.json
+IR_data_air_time_check.json
 
